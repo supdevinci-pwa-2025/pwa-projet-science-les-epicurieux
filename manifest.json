@@ -1,0 +1,19 @@
+{
+    "name": "Les épicurieux",
+    "short_name": "S&T",
+    "start_url": "/index",
+    "background_color": "#f77f00",
+    "theme_color": "f77f00",
+    "orientation": "any",
+    "description": "Les épicurieux vous aides à faire des choses",
+    "categories": ["productivity", "health"],
+    "lang": "fr",
+    "id": "/index.html",
+    "display": "standalone",
+    "dir": "ltr",
+    "display_override": ["standalone", "browser"],
+    "launch_handler": {
+        "client_mode": "auto"
+    }
+    
+}
