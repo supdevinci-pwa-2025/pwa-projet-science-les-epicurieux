@@ -46,5 +46,13 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ], 
+  "file_handlers": [
+    {
+        "action": "/open.html",
+        "accept": {
+            "text/csv": [".csv"]
+        }
+    }
   ]
 }
