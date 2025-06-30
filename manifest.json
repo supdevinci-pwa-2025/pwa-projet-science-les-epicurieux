@@ -67,5 +67,33 @@
         }
       ]
     }
-  }
+  },
+  "shortcuts": [
+    {
+      "name": "Ajouter de la science",
+      "short_name": "Ajout science",
+      "description": "Accéder rapidement à l'ajout de science",
+      "url": "/index.html",
+      "icons": [
+        {
+          "src": "/assets/manifest-icon-192.maskable.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Voir mes randoms",
+      "short_name": "Mes randoms",
+      "description": "Accéder à mes randoms",
+      "url": "/random.html",
+      "icons": [
+        {
+          "src": "/assets/manifest-icon-192.maskable.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }
