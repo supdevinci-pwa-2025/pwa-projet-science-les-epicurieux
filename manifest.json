@@ -54,5 +54,18 @@
             "text/csv": [".csv"]
         }
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/.netlify/functions/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*", "text/csv"]
+        }
+      ]
+    }
+  }
 }
