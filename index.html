@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🧪 Atelier Science</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🧪 Atelier Science</h1>
+
+  <section id="formSection">
+    <h2>Ajouter un participant</h2>
+    <input type="text" id="personName" placeholder="Nom" />
+    <select id="personRole">
+      <option>Chimie</option><option>Robotique</option><option>Électricité</option>
+    </select>
+    <button onclick="addPerson()">Ajouter ✏️</button>
+  </section>
+
+  <section id="stats">
+    <p>👥 Total : <span id="total">0</span> • 🧫 Chimie : <span id="chimie">0</span> • 🤖 Robotique : <span id="robotique">0</span> • ⚡ Électricité : <span id="électricité">0</span></p>
+  </section>
+
+  <section id="peopleList"></section>
+
+  <script src="app.js"></script>
+</body>
+</html>
