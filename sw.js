@@ -75,7 +75,7 @@ async function syncScience() {
     try {
       console.log(`🚀 Envoi de ${science.name}`); // indice: propriété du science à afficher
  
-      const response = await fetch('https://jocular-lollipop-881003.netlify.app/sw.js/syncScience/', { // indice: URL de votre API
+      const response = await fetch('/api/sync-science/', { // indice: URL de votre API
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
