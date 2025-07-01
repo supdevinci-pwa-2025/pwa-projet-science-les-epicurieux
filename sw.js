@@ -44,7 +44,7 @@ self.addEventListener('activate', event => { // indice: quand le SW devient acti
  
 // Intercepter les requêtes pour servir depuis le cache
 self.addEventListener('fetch', event => {
-  console.log('🛰 Fetch:', event.request.url);
+  console.log('🛰 Fetch:', event.request.method,event.request.url);
  
   event.respondWith( // indice: permet de renvoyer une réponse custom
     caches.match(event.request) // cherche dans le cache
