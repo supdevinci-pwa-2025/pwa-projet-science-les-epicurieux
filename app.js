@@ -23,6 +23,7 @@ function addPerson() {
   }
 
   const newPerson = { name, role };
+  saveToPendingScience({ name, role });
   people.push(newPerson);
   localStorage.setItem("scienceData", JSON.stringify(people));
   nameInput.value = "";
@@ -66,4 +67,19 @@ navigator.serviceWorker.ready.then(reg => {
     .then(() => console.log('📡 Sync enregistrée'))
     .catch(err => console.error('❌ Erreur sync:', err));
 });
+
+function saveToPendingScience(science) {
+  const request = indexedDB.open('science-db', 1);
+
+  request.onsuccess = () => {
+    const db = request.result;
+    const tx = db.transaction('pending-science', 'readwrite');
+    const store = tx.objectStore('pending-science');
+    store.add(science);
+  };
+
+  request.onerror = () => {
+    console.error('❌ Erreur d\'ouverture IndexedDB');
+  };
+}
 

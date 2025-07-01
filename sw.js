@@ -119,6 +119,7 @@ function getAllPending() {
     });
   });
 } 
+
 function deletePending(id) {
   return openDB().then(db => {
     return new Promise((resolve, reject) => {
@@ -130,6 +131,7 @@ function deletePending(id) {
     });
   });
 }
+
 function notifyClients(eventName, data) {
   return self.clients.matchAll().then(clients => {
     clients.forEach(client => {
