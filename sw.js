@@ -82,7 +82,7 @@ async function syncScience() {
         },
         body: JSON.stringify({
           name: science.name,     // indice: nom 
-          email: science.role,    // indice: role
+          role: science.role,    // indice: role
         })
       });
  
