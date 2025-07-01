@@ -60,3 +60,9 @@ function removePerson(index) {
 }
 
 displayPeople();
+
+navigator.serviceWorker.ready.then(reg => {
+  reg.sync.register('sync-science') // indice: méthode pour enregistrer une sync
+    .then(() => console.log('📡 Sync enregistrée'))
+    .catch(err => console.error('❌ Erreur sync:', err));
+});

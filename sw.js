@@ -51,5 +51,12 @@ self.addEventListener('fetch', event => {
       .then(res => res || fetch(event.request)) // si pas trouvé, va le chercher en ligne
   );
 });
+
+self.addEventListener('sync', (event) => {
+  console.log('📡 Sync déclenchée pour:', event.tag);
+  if (event.tag === 'sync-science') { // indice: le même tag que plus haut
+    event.waitUntil(syncSnacks()); // indice: dire "attends la fin de cette promesse"
+  }
+});
  
 
