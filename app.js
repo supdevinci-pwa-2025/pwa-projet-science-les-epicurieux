@@ -66,3 +66,51 @@ navigator.serviceWorker.ready.then(reg => {
     .then(() => console.log('📡 Sync enregistrée'))
     .catch(err => console.error('❌ Erreur sync:', err));
 });
+
+
+async function syncScience() {
+  console.log('📡 Début de la synchronisation...');
+ 
+  // 1️⃣ Lire la liste des participants en attente
+  const pending = await getAllPending(); // indice: fonction qui lit IndexedDB
+  console.log(`📊 ${pending.length} science(s) à synchroniser`);
+ 
+  let success = 0;
+  let fail = 0;
+ 
+  // 2️⃣ Boucle principale
+  for (const science of pending) {
+    try {
+      console.log(`🚀 Envoi de ${science.name}`); // indice: propriété du science à afficher
+ 
+      const response = await fetch('https://jocular-lollipop-881003.netlify.app/', { // indice: URL de votre API
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: science.name,     // indice: nom 
+          email: science.role,    // indice: role
+        })
+      });
+ 
+      if (response.ok) {
+        console.log(`✅ Science synchronisé : ${science}`);
+ 
+        await deletePending(science.id); // indice: supprime de IndexedDB
+        await notifyClients('participant-synced', { science }); // indice: notifie les clients
+        success++;
+      } else {
+        console.error(`❌ Erreur serveur ${response.status} pour ${science.name}`);
+        fail++;
+      }
+ 
+    } catch (err) {
+      console.error(`❌ Erreur réseau pour ${science.name}: ${err.message}`);
+      fail++;
+    }
+  }
+ 
+  // 3️⃣ Bilan final
+  console.log(`✅ ${success} sciences synchronisés, ❌ ${fail} échecs`);
+}

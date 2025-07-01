@@ -55,8 +55,8 @@ self.addEventListener('fetch', event => {
 self.addEventListener('sync', (event) => {
   console.log('📡 Sync déclenchée pour:', event.tag);
   if (event.tag === 'sync-science') { // indice: le même tag que plus haut
-    event.waitUntil(syncSnacks()); // indice: dire "attends la fin de cette promesse"
+    event.waitUntil(syncScience()); // indice: dire "attends la fin de cette promesse"
   }
 });
- 
+
 
