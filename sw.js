@@ -28,6 +28,28 @@ self.addEventListener('install', event => { // indice: quand le SW est installé
 // <!-- Écouter l'activation du SW -->
 self.addEventListener('activate', event => { // indice: quand le SW devient actif
   console.log(' Service Worker activé');
+
+  event.waitUntil(
+    caches.keys().then(keys => {
+        return Promise.all(
+            keys.filter(k=>k!==CACHE_NAME)
+            .map(k=> caches.delete(k))// supprime les vieux caches
+        )
+    })
+  )
   self.clients.claim(); // indice: prendre le contrôle des pages ouvertes
 });
+
+//  FETCH : servir depuis le cache
+ 
+// Intercepter les requêtes pour servir depuis le cache
+self.addEventListener('fetch', event => {
+  console.log('🛰 Fetch:', event.request.url);
+ 
+  event.respondWith( // indice: permet de renvoyer une réponse custom
+    caches.match(event.request) // cherche dans le cache
+      .then(res => res || fetch(event.request)) // si pas trouvé, va le chercher en ligne
+  );
+});
+ 
 
