@@ -64,7 +64,7 @@ async function syncScience() {
   console.log('📡 Début de la synchronisation...');
  
   // 1️⃣ Lire la liste des participants en attente
-  const pending = await displayPeople(); // indice: fonction qui lit IndexedDB
+  const pending = await getAllPending(); // indice: fonction qui lit IndexedDB
   console.log(`📊 ${pending.length} science(s) à synchroniser`);
  
   let success = 0;
