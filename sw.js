@@ -124,7 +124,7 @@ async function syncScience() {
  
           // Suppression du science de IndexedDB pour éviter les doublons à l'avenir
           // deletePendingscience() est une fonction asynchrone qui supprime par identifiant
-          await deletePendingScience(science.id);
+          await deletePending(science.id);
  
           // Notification aux autres onglets/pages que ce science a été synchronisé
           // Utile pour mettre à jour l'affichage en temps réel dans plusieurs fenêtres
