@@ -1,3 +1,14 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+  .then((reg) => {
+    // registration worked
+    console.log('Enregistrement réussi');
+  }).catch((error) => {
+    // registration failed
+    console.log('Erreur : ' + error);
+  });
+}
+
 let people = JSON.parse(localStorage.getItem("scienceData")) || [];
 
 function addPerson() {
