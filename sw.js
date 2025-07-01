@@ -70,7 +70,7 @@ self.addEventListener('sync', (event) => {
 * - affiche un rapport de la synchronisation à la fin,
 * - gère proprement les erreurs réseau et serveur.
 */
-async function syncSciences() {
+async function syncScience() {
   // Log dans la console pour indiquer le début de la synchronisation
   console.log('🔄 Début de la synchronisation...');
  
