@@ -207,7 +207,7 @@ function getApiUrl() {
     return `${currentUrl.origin}/.netlify/functions/science`;
   }
   // Sinon on retourne une URL de production fixe (exemple : site Netlify principal)
-  return 'https://sciencentrack.netlify.app/.netlify/functions/science';
+  return 'https://jocular-lollipop-881003.netlify.app//.netlify/functions/science';
 }
 
 
