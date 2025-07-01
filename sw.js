@@ -64,7 +64,7 @@ async function syncScience() {
   console.log('📡 Début de la synchronisation...');
  
   // 1️⃣ Lire la liste des participants en attente
-  const pending = await getAllPending(); // indice: fonction qui lit IndexedDB
+  const pending = await displayPeople(); // indice: fonction qui lit IndexedDB
   console.log(`📊 ${pending.length} science(s) à synchroniser`);
  
   let success = 0;
@@ -105,5 +105,59 @@ async function syncScience() {
  
   // 3️⃣ Bilan final
   console.log(`✅ ${success} sciences synchronisés, ❌ ${fail} échecs`);
+}
+
+
+function getAllPending() {
+  return openDB().then(db => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('pending-science', 'readonly');
+      const store = tx.objectStore('pending-science');
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  });
+} 
+function deletePending(id) {
+  return openDB().then(db => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('pending-science', 'readwrite');
+      const store = tx.objectStore('pending-science');
+      const req = store.delete(id);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  });
+}
+function notifyClients(eventName, data) {
+  return self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: eventName,
+        payload: data
+      });
+    });
+  });
+}
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('science-db', 1); // version 1
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('pending-science')) {
+        db.createObjectStore('pending-science', {
+          keyPath: 'id',
+          autoIncrement: true
+        });
+        console.log('📁 Object store "pending-science" créé');
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 }
 
