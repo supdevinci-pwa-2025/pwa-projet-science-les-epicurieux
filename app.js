@@ -19,11 +19,11 @@ navigator.serviceWorker.ready.then(reg => {
     .catch(err => console.error('❌ Erreur sync:', err));
 });
 
-document.addEventListener('DOMContentLoaded', askNotificationPermission);
 document.addEventListener('DOMContentLoaded', async () => {
   await loadsciences();
   setupForm();
   setupServiceWorkerListener();
+  askNotificationPermission();
 });
 
 // ============ GESTION DU FORMULAIRE ============
