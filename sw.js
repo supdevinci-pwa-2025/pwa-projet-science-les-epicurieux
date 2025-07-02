@@ -125,7 +125,7 @@ self.addEventListener('activate', (e) => {
   console.log('Service Worker: Activation');
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== staticCacheName).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
@@ -155,7 +155,7 @@ self.addEventListener('fetch', (event) => {
       res || fetch(request).then(fetchRes => {
         if (fetchRes.ok) {
           const resClone = fetchRes.clone();
-          caches.open(staticCacheName).then(cache => cache.put(request, resClone));
+          caches.open(CACHE_NAME).then(cache => cache.put(request, resClone));
         }
         return fetchRes;
       }).catch(() => caches.match('./offline.html'))
