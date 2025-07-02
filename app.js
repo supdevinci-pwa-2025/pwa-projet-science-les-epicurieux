@@ -68,29 +68,6 @@ function setupForm() {
   });
 }
 
-// ============ ÉCOUTER LES MESSAGES DU SERVICE WORKER ============
-function setupServiceWorkerListener() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      const { type, data } = event.data;
-      
-      console.log('📱 Message du SW:', type, data);
-      
-      switch (type) {
-        case 'science-saved-offline':
-          console.log('📱 science sauvegardé hors ligne:', data);
-          addscienceToUI(data.name, data.role);
-          showMessage(`📱 ${data.name} sauvegardé hors ligne`, 'warning');
-          break;
-          
-        case 'science-synced':
-          console.log('🔄 science synchronisé:', data);
-          showMessage(`🔄 ${data.name} synchronisé !`, 'success');
-          break;
-      }
-    });
-  }
-}
 
 // ============ CHARGEMENT DES scienceS ============
 async function loadsciences() {
@@ -154,6 +131,9 @@ function showMessage(message, type = 'info') {
 
 // ============ BOUTON TEST SYNC ============
 document.addEventListener('DOMContentLoaded', () => {
+  setupForm();
+  setupServiceWorkerListener();
+  loadsciences();
   const syncButton = document.querySelector('[data-action="sync"]');
   
   syncButton?.addEventListener('click', async () => {

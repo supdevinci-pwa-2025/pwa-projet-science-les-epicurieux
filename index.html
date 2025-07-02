@@ -47,13 +47,14 @@
     <link rel="apple-touch-startup-image" href="assets/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="assets/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
   </head>
+  <script src="app.js"></script>
   <body>
     <h1>🧪 Atelier Science</h1>
     <section id="formSection">
       <h2>Ajouter un participant</h2>
       <form id="science-form">
-        <input type="text" id="snack-name" placeholder="Nom">
-        <select id="snack-role">
+        <input type="text" id="science-name" placeholder="Nom">
+        <select id="science-role">
           <option>Chimie</option>
           <option>Robotique</option>
           <option>Électricité</option>
@@ -61,10 +62,11 @@
         <button type="submit">Ajouter ✏️</button>
       </form>
     </section>
-    <section id="stats">
+    <ul id="scienceList"></ul>
+    <!--<section id="stats">
       <p>👥 Total : <span id="total">0</span> • 🧫 Chimie : <span id="chimie">0</span> • 🤖 Robotique : <span id="robotique">0</span> • ⚡ Électricité : <span id="électricité">0</span></p>
     </section>
     <section id="scienceList"></section>
-    <script src="app.js"></script>
+    -->
   </body>
 </html>
