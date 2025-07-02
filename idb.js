@@ -1,13 +1,13 @@
 export function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('snacksDB', 3); // Même version que SW
+    const request = indexedDB.open('sciences', 3); // Même version que SW
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       
       // Ne pas supprimer - juste créer si n'existe pas
-      if (!db.objectStoreNames.contains('snacks')) {
-        const store = db.createObjectStore('snacks', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('sciences')) {
+        const store = db.createObjectStore('sciences', { keyPath: 'id' });
         store.createIndex('timestamp', 'timestamp', { unique: false });
       }
     };

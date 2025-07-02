@@ -103,7 +103,8 @@ function setupServiceWorkerListener() {
 async function loadsciences() {
   try {
     // Essayer de charger depuis l'API
-    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-science');    if (response.ok) {
+    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-sciences');    
+    if (response.ok) {
       const data = await response.json();
       sciences = data.sciences || [];
       console.log('✅ sciences chargés depuis l\'API:', sciences.length);
