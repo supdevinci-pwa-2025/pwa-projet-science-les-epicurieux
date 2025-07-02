@@ -27,20 +27,20 @@ function setupForm() {
     e.preventDefault();
     
     const name = document.querySelector('#science-name').value.trim();
-    const mood = document.querySelector('#science-mood').value.trim();
+    const role = document.querySelector('#science-role').value.trim();
     
-    if (!name || !mood) {
+    if (!name || !role) {
       alert('Veuillez remplir tous les champs');
       return;
     }
 
-    console.log('📝 Envoi du science:', { name, mood });
+    console.log('📝 Envoi du science:', { name, role });
     
     try {
       // Créer FormData pour l'envoi
       const formData = new FormData();
       formData.append('name', name);
-      formData.append('mood', mood);
+      formData.append('role', role);
       
       // Envoyer vers l'API (intercepté par le SW si hors ligne)
       const response = await fetch('/api/science', {
@@ -56,7 +56,7 @@ function setupForm() {
       } else {
         showMessage('✅ science ajouté avec succès !', 'success');
         // Ajouter à la liste locale immédiatement
-        addscienceToUI(name, mood);
+        addscienceToUI(name, role);
       }
       
       form.reset();
@@ -79,7 +79,7 @@ function setupServiceWorkerListener() {
       switch (type) {
         case 'science-saved-offline':
           console.log('📱 science sauvegardé hors ligne:', data);
-          addscienceToUI(data.name, data.mood);
+          addscienceToUI(data.name, data.role);
           showMessage(`📱 ${data.name} sauvegardé hors ligne`, 'warning');
           break;
           
@@ -112,13 +112,13 @@ async function loadsciences() {
   }
   
   // Afficher les sciences
-  sciences.forEach(science => addscienceToUI(science.name, science.mood));
+  sciences.forEach(science => addscienceToUI(science.name, science.role));
 }
 
 // ============ AFFICHAGE UI ============
-function addscienceToUI(name, mood) {
+function addscienceToUI(name, role) {
   const li = document.createElement('li');
-  li.textContent = `🍪 ${name} (${mood})`;
+  li.textContent = `🍪 ${name} (${role})`;
   li.className = 'science-item';
   scienceList.appendChild(li);
 }

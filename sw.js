@@ -1,5 +1,5 @@
 // <!-- Écouter l'installation du SW -->
-const CACHE_NAME = 'science-cacahe'; // nom du cache
+const CACHE_NAME = 'science-cache'; // nom du cache
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
