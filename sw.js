@@ -136,14 +136,101 @@ self.addEventListener('activate', event => {
 });
 
 
-self.addEventListener('fetch', event => {
-  console.log('🛰 Fetch:', event.request.method,event.request.url);
- 
-  event.respondWith( 
-    caches.match(event.request) 
-      .then(res => res || fetch(event.request)) 
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  if (request.method === 'POST' && (url.pathname.includes('/api/science') || url.pathname.includes('/.netlify/functions/science'))) {
+    event.respondWith(handlescienceSubmission(request));
+    return;
+  }
+
+  if (request.method !== 'GET' || url.origin !== location.origin) return;
+
+  if (url.pathname === "/" || url.pathname === "/index.html") {
+    event.respondWith(
+      caches.match('./index.html').then(res => res || fetch(request).catch(() => caches.match('./offline.html')))
+    );
+    return;
+  }
+
+  if (url.pathname === "/mes-humeurs" || url.pathname === "/mes-humeurs.html") {
+    event.respondWith(
+      caches.match('./mes-humeurs.html').then(res => res || fetch(request).catch(() => caches.match('./offline.html')))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(request).then(res => 
+      res || fetch(request).then(fetchRes => {
+        if (fetchRes.ok) {
+          const resClone = fetchRes.clone();
+          caches.open(staticCacheName).then(cache => cache.put(request, resClone));
+        }
+        return fetchRes;
+      }).catch(() => caches.match('./offline.html'))
+    )
   );
 });
+
+// ============ HANDLE science SUBMISSION ==============
+async function handlescienceSubmission(request) {
+  console.log('🔥 handlescienceSubmission appelée');
+  
+  try {
+    const response = await fetch(request.clone());
+    if (response.ok) {
+      console.log('✅ Requête en ligne réussie');
+      return response;
+    }
+    throw new Error(`Erreur ${response.status}`);
+  } catch (error) {
+    console.log('📱 Mode hors ligne détecté, sauvegarde locale...');
+    
+    try {
+      const formData = await request.formData();
+      console.log('📝 FormData récupérée:', {
+        name: formData.get('name'),
+        role: formData.get('role')
+      });
+      
+      const scienceData = {
+        id: Date.now().toString(),
+        name: formData.get('name') || formData.get('science'),
+        role: formData.get('role') || formData.get('role'),
+        timestamp: new Date().toISOString(),
+        synced: false
+      };
+      
+      console.log('💾 Données à sauvegarder:', scienceData);
+      
+      await savePendingscience(scienceData);
+      console.log('✅ savePendingscience terminé');
+      
+      if ('sync' in self.registration) {
+        await self.registration.sync.register('sync-sciences');
+        console.log('🔄 Background sync enregistré');
+      }
+      
+      await notifyClients('science-saved-offline', scienceData);
+      console.log('📱 Clients notifiés');
+      
+      return new Response(JSON.stringify({
+        success: true,
+        offline: true,
+        message: 'science sauvegardé hors ligne'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+    } catch (saveError) {
+      console.error('❌ Erreur lors de la sauvegarde:', saveError);
+      throw saveError;
+    }
+  }
+}
 
 self.addEventListener('sync', (event) => {
   console.log('📡 Sync déclenchée pour:', event.tag);
