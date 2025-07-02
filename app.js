@@ -57,17 +57,13 @@ function setupForm() {
       console.log('✅ Réponse:', result);
       
       if (result.offline) {
-  showMessage('📱 Science sauvegardé hors ligne !', 'warning');
-} else {
-  showMessage('✅ Science ajouté avec succès !', 'success');
-  addscienceToUI(name, role);
-  
-  // Afficher une notif
-  showLocalNotification("👨‍🔬 Participant ajouté", {
-    body: `${name} (${role}) a été ajouté avec succès.`,
-    icon: '/icons/success-icon.png' // facultatif
-  });
-}
+        showMessage('📱 Science sauvegardé hors ligne !', 'warning');
+        showLocalNotification('Science sauvegardé hors ligne !')
+      } else {
+        showMessage('✅ Science ajouté avec succès !', 'success');
+        showLocalNotification('Science ajouté avec succès !')
+        addscienceToUI(name, role);
+      }
       
       form.reset();
       
