@@ -8,15 +8,22 @@ if ('serviceWorker' in navigator) {
     console.log('Erreur : ' + error);
   });
 }
+
+const scienceList = document.querySelector('#scienceList');
+let sciences = [];
 navigator.serviceWorker.ready.then(reg => {
   reg.sync.register('sync-science') 
     .then(() => console.log('📡 Sync enregistrée'))
     .catch(err => console.error('❌ Erreur sync:', err));
 });
 
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadSnacks();
+  setupForm();
+  setupServiceWorkerListener();
+});
 
-const scienceList = document.querySelector('#scienceList');
-let sciences = [];
+
 
 
 // ============ GESTION DU FORMULAIRE ============
