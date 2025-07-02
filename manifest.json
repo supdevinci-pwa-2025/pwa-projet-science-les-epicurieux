@@ -95,5 +95,12 @@
         }
       ]
     }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshot.png",
+      "sizes": "1920x1080",
+      "type": "image/png"
+    }
   ]
 }
