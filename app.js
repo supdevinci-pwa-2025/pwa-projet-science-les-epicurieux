@@ -103,24 +103,63 @@ function setupServiceWorkerListener() {
 // ============ CHARGEMENT DES scienceS ============
 async function loadsciences() {
   try {
-    // Essayer de charger depuis l'API
-    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-sciences');    
-    if (response.ok) {
-      const data = await response.json();
-      sciences = data.sciences || [];
-      console.log('✅ sciences chargés depuis l\'API:', sciences.length);
-    } else {
-      throw new Error('API non disponible');
+
+    console.log('📱 Chargement des sciences...');
+    
+    // 1. Charger depuis IndexedDB (via idb.js)
+    let localsciences = [];
+    try {
+      localsciences = await getAllsciences();
+      console.log('📦 sciences depuis IndexedDB:', localsciences.length, localsciences);
+    } catch (error) {
+      console.error('❌ Erreur IndexedDB:', error);
     }
+
+    // 2. Charger depuis localStorage (backup)
+    const backupsciences = JSON.parse(localStorage.getItem('sciences')) || [];
+    console.log('💾 sciences depuis localStorage:', backupsciences.length);
+    
+    // 3. Essayer l'API (si en ligne)
+    let apisciences = [];
+    try {
+      const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-sciences');
+      if (response.ok) {
+        const data = await response.json();
+        apisciences = data.sciences || [];
+        console.log('✅ sciences depuis API:', apisciences.length);
+      }
+    } catch (error) {
+      console.log('📱 API non disponible');
+    }
+    
+    // 4. Fusionner les sources (éviter doublons)
+    const allsciences = [...apisciences, ...localsciences, ...backupsciences];
+    
+    // Déduplication simple par nom + mood
+    const uniquesciences = allsciences.filter((science, index, self) => 
+      index === self.findIndex(s => 
+        s.name === science.name && 
+        s.mood === science.mood
+      )
+    );
+    
+    sciences = uniquesciences;
+    console.log('🍪 Total sciences uniques:', sciences.length);
+    
+    // 5. Afficher dans l'UI
+    scienceList.innerHTML = '';
+    sciences.forEach(science => addscienceToUI(science.name, science.mood));
+    
+    // 6. Sauvegarder dans localStorage comme backup
+    localStorage.setItem('sciences', JSON.stringify(sciences));
+    
   } catch (error) {
-    console.log('📱 API non disponible, chargement depuis localStorage');
-    // Fallback sur localStorage
-    sciences = await getAllsciences();
-    sciences = [...(await getPendingSciencesFromIndexedDB())];
+    console.error('❌ Erreur loadsciences:', error);
+    // Fallback localStorage uniquement
+    sciences = JSON.parse(localStorage.getItem('sciences')) || [];
+    scienceList.innerHTML = '';
+    sciences.forEach(science => addscienceToUI(science.name, science.mood));
   }
-  
-  // Afficher les sciences
-  sciences.forEach(science => addscienceToUI(science.name, science.role));
 }
 
 // ============ AFFICHAGE UI ============
