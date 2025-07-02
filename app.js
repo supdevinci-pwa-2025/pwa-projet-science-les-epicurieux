@@ -73,7 +73,7 @@ function setupForm() {
 async function loadsciences() {
   try {
     // Essayer de charger depuis l'API
-    const response = await fetch('https://sciencentrack.netlify.app/.netlify/functions/get-sciences');
+    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-sciences');
     
     if (response.ok) {
       const data = await response.json();
