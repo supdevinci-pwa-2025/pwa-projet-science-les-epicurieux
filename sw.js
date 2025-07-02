@@ -154,13 +154,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname === "/mes-humeurs" || url.pathname === "/mes-humeurs.html") {
-    event.respondWith(
-      caches.match('./mes-humeurs.html').then(res => res || fetch(request).catch(() => caches.match('./offline.html')))
-    );
-    return;
-  }
-
   event.respondWith(
     caches.match(request).then(res => 
       res || fetch(request).then(fetchRes => {

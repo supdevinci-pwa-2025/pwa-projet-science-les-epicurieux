@@ -131,9 +131,6 @@ function showMessage(message, type = 'info') {
 
 // ============ BOUTON TEST SYNC ============
 document.addEventListener('DOMContentLoaded', () => {
-  setupForm();
-  setupServiceWorkerListener();
-  loadsciences();
   const syncButton = document.querySelector('[data-action="sync"]');
   
   syncButton?.addEventListener('click', async () => {
