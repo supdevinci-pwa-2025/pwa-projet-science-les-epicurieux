@@ -18,7 +18,7 @@ navigator.serviceWorker.ready.then(reg => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadSnacks();
+  await loadsciences();
   setupForm();
   setupServiceWorkerListener();
 });
