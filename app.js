@@ -8,65 +8,174 @@ if ('serviceWorker' in navigator) {
     console.log('Erreur : ' + error);
   });
 }
-
-let people = JSON.parse(localStorage.getItem("scienceData")) || [];
-
-function addPerson() {
-  const nameInput = document.getElementById("personName");
-  const roleInput = document.getElementById("personRole");
-  const name = nameInput.value.trim();
-  const role = roleInput.value;
-
-  if (name === "") {
-    alert("Veuillez entrer un nom.");
-    return;
-  }
-
-  const newPerson = { name, role };
-  saveToPendingScience({ name, role });
-  people.push(newPerson);
-  localStorage.setItem("scienceData", JSON.stringify(people));
-  nameInput.value = "";
-  displayPeople();
-}
-
-function displayPeople() {
-  const list = document.getElementById("peopleList");
-  list.innerHTML = "";
-
-  let count = { "total": 0, "Chimie": 0, "Robotique": 0, "Électricité": 0 };
-
-  people.forEach(({
-    name, role
-  }, index) => {
-    const div = document.createElement("div");
-    div.className = "person";
-    div.innerHTML = `<span>${name} – ${role}</span><button onclick="removePerson(${index})">❌</button>`;
-    list.appendChild(div);
-    count.total++;
-    count[role]++;
-  });
-
-  document.getElementById("total").textContent = count.total;
-  document.getElementById("chimie").textContent = count["Chimie"];
-  document.getElementById("robotique").textContent = count["Robotique"];
-  document.getElementById("électricité").textContent = count["Électricité"];
- 
-}
-
-function removePerson(index) {
-  people.splice(index, 1);
-  localStorage.setItem("scienceData", JSON.stringify(people));
-  displayPeople();
-}
-
-displayPeople();
-
 navigator.serviceWorker.ready.then(reg => {
-  reg.sync.register('sync-science') // indice: méthode pour enregistrer une sync
+  reg.sync.register('sync-science') 
     .then(() => console.log('📡 Sync enregistrée'))
     .catch(err => console.error('❌ Erreur sync:', err));
 });
+
+
+const scienceList = document.querySelector('#scienceList');
+let sciences = [];
+
+
+// ============ GESTION DU FORMULAIRE ============
+function setupForm() {
+  const form = document.querySelector('#science-form');
+  
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.querySelector('#science-name').value.trim();
+    const mood = document.querySelector('#science-mood').value.trim();
+    
+    if (!name || !mood) {
+      alert('Veuillez remplir tous les champs');
+      return;
+    }
+
+    console.log('📝 Envoi du science:', { name, mood });
+    
+    try {
+      // Créer FormData pour l'envoi
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('mood', mood);
+      
+      // Envoyer vers l'API (intercepté par le SW si hors ligne)
+      const response = await fetch('/api/science', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      console.log('✅ Réponse:', result);
+      
+      if (result.offline) {
+        showMessage('📱 science sauvegardé hors ligne !', 'warning');
+      } else {
+        showMessage('✅ science ajouté avec succès !', 'success');
+        // Ajouter à la liste locale immédiatement
+        addscienceToUI(name, mood);
+      }
+      
+      form.reset();
+      
+    } catch (error) {
+      console.error('❌ Erreur soumission:', error);
+      showMessage('❌ Erreur lors de l\'ajout', 'error');
+    }
+  });
+}
+
+// ============ ÉCOUTER LES MESSAGES DU SERVICE WORKER ============
+function setupServiceWorkerListener() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      const { type, data } = event.data;
+      
+      console.log('📱 Message du SW:', type, data);
+      
+      switch (type) {
+        case 'science-saved-offline':
+          console.log('📱 science sauvegardé hors ligne:', data);
+          addscienceToUI(data.name, data.mood);
+          showMessage(`📱 ${data.name} sauvegardé hors ligne`, 'warning');
+          break;
+          
+        case 'science-synced':
+          console.log('🔄 science synchronisé:', data);
+          showMessage(`🔄 ${data.name} synchronisé !`, 'success');
+          break;
+      }
+    });
+  }
+}
+
+// ============ CHARGEMENT DES scienceS ============
+async function loadsciences() {
+  try {
+    // Essayer de charger depuis l'API
+    const response = await fetch('https://sciencentrack.netlify.app/.netlify/functions/get-sciences');
+    
+    if (response.ok) {
+      const data = await response.json();
+      sciences = data.sciences || [];
+      console.log('✅ sciences chargés depuis l\'API:', sciences.length);
+    } else {
+      throw new Error('API non disponible');
+    }
+  } catch (error) {
+    console.log('📱 API non disponible, chargement depuis localStorage');
+    // Fallback sur localStorage
+    sciences = JSON.parse(localStorage.getItem('sciences')) || [];
+  }
+  
+  // Afficher les sciences
+  sciences.forEach(science => addscienceToUI(science.name, science.mood));
+}
+
+// ============ AFFICHAGE UI ============
+function addscienceToUI(name, mood) {
+  const li = document.createElement('li');
+  li.textContent = `🍪 ${name} (${mood})`;
+  li.className = 'science-item';
+  scienceList.appendChild(li);
+}
+
+function showMessage(message, type = 'info') {
+  // Créer un élément de notification
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  
+  // Styles basiques
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    z-index: 1000;
+    ${type === 'success' ? 'background: #4CAF50;' : ''}
+    ${type === 'warning' ? 'background: #FF9800;' : ''}
+    ${type === 'error' ? 'background: #f44336;' : ''}
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Supprimer après 3 secondes
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// ============ BOUTON TEST SYNC ============
+document.addEventListener('DOMContentLoaded', () => {
+  const syncButton = document.querySelector('[data-action="sync"]');
+  
+  syncButton?.addEventListener('click', async () => {
+    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.sync.register('sync-sciences');
+        console.log('🔄 Background sync déclenché manuellement');
+        showMessage('🔄 Synchronisation déclenchée', 'info');
+      } catch (error) {
+        console.error('❌ Erreur sync:', error);
+        showMessage('❌ Erreur de synchronisation', 'error');
+      }
+    } else {
+      showMessage('❌ Background Sync non supporté', 'error');
+    }
+  });
+});
+
+
+
+
 
 function saveToPendingScience(science) {
   const request = indexedDB.open('science-db', 1);
@@ -105,7 +214,6 @@ function setupServiceWorkerListener() {
     });
   }
 }
-
 // ============ SAUVEGARDE DE SECOURS ============
 function backupToLocalStorage() {
   localStorage.setItem('sciences', JSON.stringify(sciences));
