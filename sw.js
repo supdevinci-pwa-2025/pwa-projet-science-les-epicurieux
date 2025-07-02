@@ -17,7 +17,7 @@ const FILES_TO_CACHE = [
 // ============ IndexedDB ==============
 function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('sciencesDB', 3);
+    const request = indexedDB.open('sciencesDB', 1);
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
