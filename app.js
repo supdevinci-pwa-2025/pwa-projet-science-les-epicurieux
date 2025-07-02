@@ -23,9 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupServiceWorkerListener();
 });
 
-
-
-
 // ============ GESTION DU FORMULAIRE ============
 function setupForm() {
   const form = document.querySelector('#science-form');
