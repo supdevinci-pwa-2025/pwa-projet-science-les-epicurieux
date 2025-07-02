@@ -1,4 +1,5 @@
-import { getAllsciences,getPendingSciencesFromIndexedDB } from './idb.js';
+import { getAllsciences,addScience } from './idb.js';
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
   .then((reg) => {
@@ -9,9 +10,9 @@ if ('serviceWorker' in navigator) {
     console.log('Erreur : ' + error);
   });
 }
-
 const scienceList = document.querySelector('#scienceList');
 let sciences = [];
+
 navigator.serviceWorker.ready.then(reg => {
   reg.sync.register('sync-science') 
     .then(() => console.log('📡 Sync enregistrée'))
@@ -102,7 +103,7 @@ function setupServiceWorkerListener() {
 async function loadsciences() {
   try {
     // Essayer de charger depuis l'API
-    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-sciences');    if (response.ok) {
+    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-science');    if (response.ok) {
       const data = await response.json();
       sciences = data.sciences || [];
       console.log('✅ sciences chargés depuis l\'API:', sciences.length);

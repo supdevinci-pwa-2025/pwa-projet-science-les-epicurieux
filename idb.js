@@ -1,10 +1,15 @@
 export function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('sciencesDB', 1);
+    const request = indexedDB.open('snacksDB', 3); // Même version que SW
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      db.createObjectStore('sciences', { keyPath: 'id', autoIncrement: true });
+      
+      // Ne pas supprimer - juste créer si n'existe pas
+      if (!db.objectStoreNames.contains('snacks')) {
+        const store = db.createObjectStore('snacks', { keyPath: 'id' });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+      }
     };
 
     request.onsuccess = () => resolve(request.result);
@@ -12,13 +17,22 @@ export function openDB() {
   });
 }
 
-export function addscience(science) {
+export function addScience(science) {
   return openDB().then(db => {
     return new Promise((resolve, reject) => {
+      const snackData = {
+        id: Date.now().toString(), // Même format que SW
+        name: snack.name,
+        rolr: snack.role,
+        timestamp: new Date().toISOString(),
+        synced: false // Marquer comme non synchronisé
+      };
+      
       const tx = db.transaction('sciences', 'readwrite');
-      tx.objectStore('sciences').add(science);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
+      const request = tx.objectStore('sciences').add(snackData);
+      
+      request.onsuccess = () => resolve(snackData);
+      request.onerror = () => reject(request.error);
     });
   });
 }
