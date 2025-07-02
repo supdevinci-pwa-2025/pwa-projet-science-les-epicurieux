@@ -1,3 +1,4 @@
+import { getAllsciences,getPendingSciencesFromIndexedDB } from './idb.js';
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
   .then((reg) => {
@@ -111,7 +112,8 @@ async function loadsciences() {
   } catch (error) {
     console.log('📱 API non disponible, chargement depuis localStorage');
     // Fallback sur localStorage
-    sciences = JSON.parse(localStorage.getItem('sciences')) || [];
+    sciences = await getAllsciences();
+    sciences = [...(await getPendingSciencesFromIndexedDB())];
   }
   
   // Afficher les sciences
@@ -175,14 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-
-
-// ============ SAUVEGARDE DE SECOURS ============
-function backupToLocalStorage() {
-  localStorage.setItem('sciences', JSON.stringify(sciences));
-}
-setInterval(backupToLocalStorage, 30000);
-
 
 //===========Push notif =================
 

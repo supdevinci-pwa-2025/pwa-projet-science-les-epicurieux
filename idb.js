@@ -34,3 +34,19 @@ export function getAllsciences() {
     });
   });
 }
+
+export function getPendingSciencesFromIndexedDB() {
+  return openDB().then(db => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('sciences', 'readonly');
+      const store = tx.objectStore('sciences');
+      const request = store.getAll();
+      request.onsuccess = () => {
+        const all = request.result;
+        const pendingOnly = all.filter(item => item.pending === true);
+        resolve(pendingOnly);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  });
+}
