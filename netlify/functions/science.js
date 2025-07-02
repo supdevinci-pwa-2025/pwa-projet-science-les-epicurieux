@@ -1,17 +1,17 @@
 exports.handler = async (event) => {
-  const science = JSON.parse(event.body);
-    console.log(science)
-  if (!science.name || !science.role) {
+  const sciences = JSON.parse(event.body);
+    console.log(sciences)
+  if (!sciences.name || !sciences.role) {
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Il manque le nom ou le role !' })
     };
   }
  
-  console.log('science reçu via Background Sync :', science);
+  console.log('sciences reçu via Background Sync :', sciences);
  
   return {
     statusCode: 200,
-    body: JSON.stringify({ message: 'science bien reçu !' })
+    body: JSON.stringify({ message: 'sciences bien reçu !' })
   };
 };
