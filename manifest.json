@@ -11,6 +11,7 @@
     "health"
   ],
   "lang": "fr",
+  "scope": "/",
   "id": "/index.html",
   "display": "standalone",
   "dir": "ltr",
@@ -102,5 +103,9 @@
       "sizes": "1920x1080",
       "type": "image/png"
     }
-  ]
+  ],
+  "iarc_rating_id": "",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope_extensions": []
 }
