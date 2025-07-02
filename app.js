@@ -17,6 +17,7 @@ navigator.serviceWorker.ready.then(reg => {
     .catch(err => console.error('❌ Erreur sync:', err));
 });
 
+document.addEventListener('DOMContentLoaded', askNotificationPermission);
 document.addEventListener('DOMContentLoaded', async () => {
   await loadsciences();
   setupForm();
@@ -56,12 +57,17 @@ function setupForm() {
       console.log('✅ Réponse:', result);
       
       if (result.offline) {
-        showMessage('📱 science sauvegardé hors ligne !', 'warning');
-      } else {
-        showMessage('✅ science ajouté avec succès !', 'success');
-        // Ajouter à la liste locale immédiatement
-        addscienceToUI(name, role);
-      }
+  showMessage('📱 Science sauvegardé hors ligne !', 'warning');
+} else {
+  showMessage('✅ Science ajouté avec succès !', 'success');
+  addscienceToUI(name, role);
+  
+  // Afficher une notif
+  showLocalNotification("👨‍🔬 Participant ajouté", {
+    body: `${name} (${role}) a été ajouté avec succès.`,
+    icon: '/icons/success-icon.png' // facultatif
+  });
+}
       
       form.reset();
       
@@ -181,3 +187,29 @@ function backupToLocalStorage() {
 }
 setInterval(backupToLocalStorage, 30000);
 
+
+//===========Push notif =================
+
+function askNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.warn("Ce navigateur ne supporte pas les notifications.");
+    return;
+  }
+
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      console.log("🔔 Notifications autorisées !");
+      showLocalNotification("🎉 Notifications activées !", {
+        body: "Tu recevras des alertes ici.",
+      });
+    } else {
+      console.warn("❌ Notifications refusées.");
+    }
+  });
+}
+
+function showLocalNotification(title, options) {
+  if (Notification.permission === 'granted') {
+    new Notification(title, options);
+  }
+}
