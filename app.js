@@ -50,7 +50,7 @@ function setupForm() {
       formData.append('role', role);
       
       // Envoyer vers l'API (intercepté par le SW si hors ligne)
-      const response = await fetch('/api/science', {
+      const response = await fetch('.netlify/functions/science', {
         method: 'POST',
         body: formData
       });
@@ -71,6 +71,7 @@ function setupForm() {
       
     } catch (error) {
       console.error('❌ Erreur soumission:', error);
+      console.error('❌ Message Erreur soumission:', error.message);
       showMessage('❌ Erreur lors de l\'ajout', 'error');
     }
   });
