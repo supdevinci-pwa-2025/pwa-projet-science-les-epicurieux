@@ -74,7 +74,7 @@ async function loadsciences() {
   try {
     // Essayer de charger depuis l'API
     const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/science');
-    
+    console.log(sciences.length)
     if (response.ok) {
       const data = await response.json();
       sciences = data.sciences || [];
