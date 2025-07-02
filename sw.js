@@ -17,7 +17,7 @@ const FILES_TO_CACHE = [
 // ============ IndexedDB ==============
 function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('sciencesDB', 1);
+    const request = indexedDB.open('sciencesDB', 3);
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
@@ -121,18 +121,14 @@ self.addEventListener('install', event => {
   self.skipWaiting(); 
 });
  
-self.addEventListener('activate', event => { 
-  console.log(' Service Worker activé');
-
-  event.waitUntil(
-    caches.keys().then(keys => {
-        return Promise.all(
-            keys.filter(k=>k!==CACHE_NAME)
-            .map(k=> caches.delete(k))
-        )
-    })
-  )
-  self.clients.claim(); 
+self.addEventListener('activate', (e) => {
+  console.log('Service Worker: Activation');
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== staticCacheName).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
 });
 
 
@@ -265,4 +261,53 @@ async function syncScience() {
   }
 }
 
+// ============ BACKGROUND SYNC ==============
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-sciences') {
+    event.waitUntil(syncsciences());
+  }
+});
+
+async function syncsciences() {
+  const pending = await getAllPending();
+  console.log(`🔄 Tentative de sync de ${pending.length} sciences`);
+  
+  for (const science of pending) {
+    try {
+      const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/science', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Accept': 'application/json' 
+        },
+        body: JSON.stringify({
+          name: science.name,
+          role: science.role,
+        })
+      });
+      
+      if (response.ok) {
+        await deletePendingscience(science.id);
+        await notifyClients('science-synced', science);
+        console.log('✅ science synchronisé:', science.name);
+      } else {
+        console.error(`❌ Erreur sync ${science.name}: ${response.status}`);
+      }
+    } catch (err) {
+      console.error(`❌ Sync failed for ${science.name}:`, err);
+    }
+  }
+}
+
+// ============ PUSH ==============
+self.addEventListener('push', (event) => {
+  const data = event.data?.json() || {};
+  const title = data.title || "science'n'Track 🍉";
+  const options = {
+    body: data.body || "Nouvelle notification",
+    icon: "./assets/manifest-icon-192.maskable.png",
+    badge: "./assets/manifest-icon-192.maskable.png"
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
 

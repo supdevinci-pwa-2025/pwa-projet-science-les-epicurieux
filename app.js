@@ -95,9 +95,7 @@ function setupServiceWorkerListener() {
 async function loadsciences() {
   try {
     // Essayer de charger depuis l'API
-    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/science');
-    console.log(sciences.length)
-    if (response.ok) {
+    const response = await fetch('https://jocular-lollipop-881003.netlify.app/.netlify/functions/get-sciences');    if (response.ok) {
       const data = await response.json();
       sciences = data.sciences || [];
       console.log('✅ sciences chargés depuis l\'API:', sciences.length);
@@ -171,25 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-
-
-
-
-
-function saveToPendingScience(science) {
-  const request = indexedDB.open('science-db', 1);
-
-  request.onsuccess = () => {
-    const db = request.result;
-    const tx = db.transaction('pending-science', 'readwrite');
-    const store = tx.objectStore('pending-science');
-    store.add(science);
-  };
-
-  request.onerror = () => {
-    console.error('❌ Erreur d\'ouverture IndexedDB');
-  };
-}
 
 
 // ============ SAUVEGARDE DE SECOURS ============
